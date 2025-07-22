@@ -5,6 +5,7 @@ from datetime import datetime, timezone
 cg = CoinGeckoAPI()
 pd.set_option('display.float_format', '{:,.2f}'.format)
 
+
 def get_current_price(coin_id, currency="usd"):
     data = cg.get_price(ids=coin_id, vs_currencies=currency)
     if coin_id in data and currency in data[coin_id]:
@@ -35,8 +36,25 @@ def get_historical_data(coin_id, currency="usd", days=90):
     return df
 
 
+def get_daily_summary(coin_id, vs_currency="usd"):
+    df = get_historical_data(coin_id, vs_currency, days=1)
+    if df is None or len(df) == 0:
+        return None
+    current_price = df["price"].iloc[-1]
+    min_price = df["price"].min()
+    max_price = df["price"].max()
+    total_volume = df["volume"].sum()
+    summary = {
+        "current_price": current_price,
+        "min_price": min_price,
+        "max_price": max_price,
+        "total_volume": total_volume
+    }
+    return summary
+
+
 if __name__ == '__main__':
     # price = get_current_price("ethereum")
-    price = get_historical_data("bitcoin", days=360)
+    # price = get_historical_data("bitcoin", days=360)
+    price = get_daily_summary("bitcoin")
     print(price)
-
