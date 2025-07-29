@@ -2,7 +2,8 @@ from aiogram import Router, F
 from aiogram.types import Message
 from utils.coingeeko_service import get_current_price, get_daily_summary, get_historical_data
 from utils.indicators import get_rsi, get_ema, simple_signal
-
+from utils.text_template import make_ai_prompt
+from utils.openai_service import get_ai_prediction
 router = Router()
 
 
@@ -45,3 +46,6 @@ async def analyze(message: Message):
     рекомендация по RSI:*{signal_rsi}*
     EMA=*{current_ema}*"""
     await message.reply(text, parse_mode="Markdown")
+    prompt=make_ai_prompt(coin_id, summary, current_rsi, current_ema, signal_rsi)
+    answer=get_ai_prediction(prompt)
+    await message.reply(answer, parse_mode="Markdown")
