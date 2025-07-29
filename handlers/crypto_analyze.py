@@ -1,6 +1,7 @@
 from aiogram import Router, F
 from aiogram.types import Message
-from utils.coingeeko_service import get_current_price, get_daily_summary
+from utils.coingeeko_service import get_current_price, get_daily_summary, get_historical_data
+from utils.indicators import get_rsi, get_ema, simple_signal
 
 router = Router()
 
@@ -19,6 +20,7 @@ async def price(message: Message):
     response = f'Текущая цена {coin_id.capitalize()}: {price}'
     await message.reply(response)
 
+
 @router.message(F.text.startswith('/analyze'))
 async def analyze(message: Message):
     parts = message.text.strip().split()
@@ -30,9 +32,16 @@ async def analyze(message: Message):
     if summary is None:
         await message.reply("No data found")
         return
+    df = get_historical_data(coin_id, days=30)
+    current_rsi = get_rsi(df, period=30)
+    current_ema = get_ema(df, period=30)
+    signal_rsi = simple_signal(rsi=current_rsi)
     text = f"""💸{coin_id.capitalize()} за последние 24 часа:
     цена: *{summary["current_price"]:.2f} USD*
     минимальная цена: *{summary["min_price"]:.2f} USD*
     максимальная цена: *{summary["max_price"]:.2f} USD*
-    объем: *{summary["total_volume"]:.2f}*"""
+    объем: *{summary["total_volume"]:.2f}*
+    RSI=*{current_rsi}*
+    рекомендация по RSI:*{signal_rsi}*
+    EMA=*{current_ema}*"""
     await message.reply(text, parse_mode="Markdown")
