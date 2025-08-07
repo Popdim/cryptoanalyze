@@ -16,6 +16,7 @@ def make_ai_prompt(
            объем торгов за сутки {summary["total_volume"]:.2f}USD
            RSI {current_rsi:.2f}
            EMA {current_ema:.2f}
+           сделай в конце однозначный вывод одним словом, что бы ты сделал, buy, hold или sell
 """
     return prompt
 

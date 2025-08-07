@@ -1,12 +1,13 @@
 from aiogram import Router, types
 from aiogram.filters import Command
+from keyboards.start_keyboard import keyboard
 
 router = Router()
 
 
 @router.message(Command("start"))
 async def cmd_start(message: types.Message):
-    await message.answer(text="abc")
+    await message.answer(text="abc", reply_markup=keyboard)
 
 
 @router.message(Command("help"))
