@@ -57,7 +57,7 @@ async def analyze(message: Message,bot:Bot):
 
 
 @router.message(F.text.startswith('/ai'))
-async def analyze(message: Message,bot:Bot):
+async def ai(message: Message,bot:Bot):
     parts = message.text.strip().split()
     if len(parts) < 2:
         await message.reply("Укажите ID монеты", reply_markup=ai_keyboard.keyboard)

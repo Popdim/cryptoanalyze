@@ -16,6 +16,23 @@ def calculate_rsi(prices, period=14):
     return rsi
 
 
+def calculate_macd(price, fast_period=14, slow_period=30, signal_period=9):
+    price = pd.Series(price)
+    fast_ema = calculate_ema(price, period=fast_period)
+    slow_ema = calculate_ema(price, period=slow_period)
+    macd_line = fast_ema - slow_ema
+    signal_line = calculate_ema(macd_line, period=signal_period)
+    histogram = macd_line - signal_line
+    return {"macd_line": macd_line, "signal_line": signal_line, "histogram": histogram}
+
+
+def get_macd(df, fast_period=14, slow_period=30, signal_period=9):
+    macd_data = calculate_macd(df["price"], fast_period, slow_period, signal_period)
+    return {"macd_line": round(macd_data["macd_line"].iloc[-1], 2),
+            "signal_line": round(macd_data["signal_line"].iloc[-1], 2),
+            "histogram": round(macd_data["histogram"].iloc[-1], 2), }
+
+
 def calculate_ema(prices, period=14):
     prices = pd.Series(prices)
     ema = prices.ewm(span=period, adjust=False).mean()
@@ -43,6 +60,18 @@ def simple_signal(rsi):
         return "hold"
 
 
+def macd_signal(macd_line, signal_line, histogram, preview_histogram=None):
+    if macd_line > signal_line and histogram > 0:
+        if preview_histogram is not None and preview_histogram <= 0:
+            return "buy"
+        elif histogram>0:
+            return "bullish"
+    elif macd_line< signal_line and histogram<0:
+        if preview_histogram is not None and preview_histogram >= 0:
+            return "sell"
+        elif histogram<0:
+            return "bearish"
+    return "hold"
 if __name__ == '__main__':
     df = get_historical_data(coin_id="bitcoin", currency="usd", days=14)
     # rsi = calculate_rsi(df["price"])

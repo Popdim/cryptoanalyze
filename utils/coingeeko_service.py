@@ -19,15 +19,15 @@ def get_historical_data(coin_id, currency="usd", days=90):
     data = cg.get_coin_market_chart_by_id(id=coin_id, vs_currency=currency, days=days)
     prices = data["prices"]
     volumes = data["total_volumes"]
-    print(prices)
-    print(volumes)
+    # print(prices)
+    # print(volumes)
     date_list = []
     price_list = []
     volume_list = []
     for price, volume in zip(prices, volumes):
         timestamp = price[0] / 1000
         dt = datetime.fromtimestamp(timestamp, tz=timezone.utc)
-        print(dt)
+        # print(dt)
         date_list.append(dt)
         price_list.append(price[1])
         volume_list.append(volume[1])
@@ -57,4 +57,4 @@ if __name__ == '__main__':
     # price = get_current_price("ethereum")
     # price = get_historical_data("bitcoin", days=360)
     price = get_daily_summary("bitcoin")
-    print(price)
+    # print(price)
